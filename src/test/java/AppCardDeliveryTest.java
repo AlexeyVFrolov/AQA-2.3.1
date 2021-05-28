@@ -99,17 +99,17 @@ public class AppCardDeliveryTest {
         $(withText("Поле обязательно для заполнения")).shouldBe(Condition.visible);
     }
 
-//    @Test
-//    void shouldAlertIfWrongPhoneEnteredTest() {
-//        val validUser = DataGenerator.Registration.generateUser("ru");
-//
-//        $("[data-test-id='city'] input").setValue(validUser.getCity());
-//        $("[data-test-id='name'] input").setValue(validUser.getName());
-//        $("[data-test-id='phone'] input").setValue("89219999999");
-//        $(".checkbox").click();
-//        $(".button").click();
-//        $(withText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.")).shouldBe(Condition.visible);
-//    }
+    @Test
+    void shouldAlertIfWrongPhoneEnteredTest() {
+        val validUser = DataGenerator.Registration.generateUser("ru");
+
+        $("[data-test-id='city'] input").setValue(validUser.getCity());
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue("89219999999");
+        $(".checkbox").click();
+        $(".button").click();
+        $(withText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.")).shouldBe(Condition.visible);
+    }
 
     @Test
     void shouldAlertIfNoAgreement() {
