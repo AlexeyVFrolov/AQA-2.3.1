@@ -22,7 +22,7 @@ public class DataGenerator {
 
         List<String> validCitY = new ArrayList<String>(Arrays.asList("Волгоград", "Уфа", "Элиста", "Казань", "Симферополь", "Владивосток"));
         Random randomIndex = new Random();
-        return validCitY.get(randomIndex.nextInt());
+        return validCitY.get(randomIndex.nextInt(5));
     }
 
     public static String generateName(String locale) {
@@ -40,8 +40,8 @@ public class DataGenerator {
         }
 
         public static UserInfo generateUser(String locale) {
-
-            return new UserInfo(generateCity(locale), generateName(locale), generatePhone(locale));
+           DataGenerator.UserInfo user = new DataGenerator.UserInfo(generateCity(locale), generateName(locale), generatePhone(locale));
+           return user;
         }
     }
 
@@ -50,11 +50,5 @@ public class DataGenerator {
         String city;
         String name;
         String phone;
-
-        UserInfo(String city, String name, String phone) {
-            this.city = city;
-            this.name = name;
-            this.phone = phone;
-        }
     }
 }

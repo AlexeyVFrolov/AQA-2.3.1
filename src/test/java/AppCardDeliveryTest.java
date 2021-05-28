@@ -2,6 +2,7 @@ import com.codeborne.selenide.Condition;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Keys;
 
 import java.time.Duration;
 
@@ -18,6 +19,7 @@ public class AppCardDeliveryTest {
 
     @Test
     void shouldSuccessfulPlanAndReplanMeeting() {
+
         val validUser = DataGenerator.Registration.generateUser("ru");
         val daysToAddForFirstMeeting = 4;
         val firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
@@ -25,12 +27,16 @@ public class AppCardDeliveryTest {
         val secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
 
         $("[data-test-id='city'] input").setValue(validUser.getCity());
-        $("[data-test-id='data'] input").setValue(firstMeetingDate);
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(firstMeetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
         $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $(".checkbox").click();
+        $(withText("Запланировать")).click();
         $(withText("Успешно")).shouldBe(Condition.visible, Duration.ofSeconds(20));
-        $("[data-test-id='data'] input").setValue(secondMeetingDate);
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(secondMeetingDate);
+        $(withText("Запланировать")).click();
         $(withText("Необходимо подтверждение")).shouldBe(Condition.visible, Duration.ofSeconds(20));
         $(withText("Перепланировать")).click();
         $(withText("Успешно")).shouldBe(Condition.visible, Duration.ofSeconds(20));
