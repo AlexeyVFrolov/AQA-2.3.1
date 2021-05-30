@@ -6,9 +6,10 @@ import org.openqa.selenium.Keys;
 
 import java.time.Duration;
 
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.withText;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
 
 public class AppCardDeliveryTest {
 
@@ -20,7 +21,7 @@ public class AppCardDeliveryTest {
     @Test
     void shouldSuccessfulPlanAndReplanMeeting() {
 
-        val validUser = DataGenerator.Registration.generateUser("ru");
+        val validUser = DataGenerator.Registration.generateValidUser("ru");
         val daysToAddForFirstMeeting = 4;
         val firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
         val daysToAddForSecondMeeting = 7;
@@ -33,19 +34,27 @@ public class AppCardDeliveryTest {
         $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $(".checkbox").click();
         $(withText("Запланировать")).click();
-        $(withText("Успешно")).shouldBe(Condition.visible, Duration.ofSeconds(20));
+        $$("button").find(exactText("Запланировать")).click();
+        $("[data-test-id= 'success-notification'] .notification__content").shouldHave(text(firstMeetingDate)).shouldBe(Condition.visible, Duration.ofSeconds(20));
+        open("http://localhost:9999");
+        $("[data-test-id='city'] input").setValue(validUser.getCity());
         $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
         $("[data-test-id='date'] input").sendKeys(secondMeetingDate);
-        $(withText("Запланировать")).click();
-        $(withText("Необходимо подтверждение")).shouldBe(Condition.visible, Duration.ofSeconds(20));
-        $(withText("Перепланировать")).click();
-        $(withText("Успешно")).shouldBe(Condition.visible, Duration.ofSeconds(20));
+        $("[data-test-id='name'] input").setValue(validUser.getName());
+        $("[data-test-id='phone'] input").setValue(validUser.getPhone());
+        $(".checkbox").click();
+        $$("button").find(exactText("Запланировать")).click();
+        $("[data-test-id='replan-notification'] .button__text").click();
+        $("[data-test-id= 'success-notification'] .notification__content").shouldHave(text(secondMeetingDate)).shouldBe(Condition.visible, Duration.ofSeconds(20));
     }
 
     @Test
     void shouldAlertIfEmptyPlaceTest() {
-        val validUser = DataGenerator.Registration.generateUser("ru");
+        val validUser = DataGenerator.Registration.generateValidUser("ru");
+        val meetingDate = DataGenerator.generateDate(5);
 
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(meetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
         $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $(".checkbox").click();
@@ -55,9 +64,13 @@ public class AppCardDeliveryTest {
 
     @Test
     void shouldAlertIfWrongPlaceEnteredTest() {
-        val validUser = DataGenerator.Registration.generateUser("ru");
+        val validUser = DataGenerator.Registration.generateValidUser("ru");
+        val invalidUser = DataGenerator.Registration.generateInvalidUser("en");
+        val meetingDate = DataGenerator.generateDate(5);
 
-        $("[data-test-id='city'] input").setValue("Вена");
+        $("[data-test-id='city'] input").setValue(invalidUser.getCity());
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(meetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
         $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $(".checkbox").click();
@@ -67,9 +80,12 @@ public class AppCardDeliveryTest {
 
     @Test
     void shouldAlertIfEmptyNameTest() {
-        val validUser = DataGenerator.Registration.generateUser("ru");
+        val validUser = DataGenerator.Registration.generateValidUser("ru");
+        val meetingDate = DataGenerator.generateDate(5);
 
         $("[data-test-id='city'] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(meetingDate);
         $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $(".checkbox").click();
         $(".button").click();
@@ -78,10 +94,14 @@ public class AppCardDeliveryTest {
 
     @Test
     void shouldAlertIfWrongNameEnteredTest() {
-        val validUser = DataGenerator.Registration.generateUser("ru");
+        val validUser = DataGenerator.Registration.generateValidUser("ru");
+        val invalidUser = DataGenerator.Registration.generateInvalidUser("en");
+        val meetingDate = DataGenerator.generateDate(5);
 
         $("[data-test-id='city'] input").setValue(validUser.getCity());
-        $("[data-test-id='name'] input").setValue("Vera Semenova");
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(meetingDate);
+        $("[data-test-id='name'] input").setValue(invalidUser.getName());
         $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $(".checkbox").click();
         $(".button").click();
@@ -90,9 +110,12 @@ public class AppCardDeliveryTest {
 
     @Test
     void shouldAlertIfEmptyPhoneTest() {
-        val validUser = DataGenerator.Registration.generateUser("ru");
+        val validUser = DataGenerator.Registration.generateValidUser("ru");
+        val meetingDate = DataGenerator.generateDate(5);
 
         $("[data-test-id='city'] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(meetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
         $(".checkbox").click();
         $(".button").click();
@@ -101,11 +124,15 @@ public class AppCardDeliveryTest {
 
     @Test
     void shouldAlertIfWrongPhoneEnteredTest() {
-        val validUser = DataGenerator.Registration.generateUser("ru");
+        val validUser = DataGenerator.Registration.generateValidUser("ru");
+        val invalidUser = DataGenerator.Registration.generateInvalidUser("en");
+        val meetingDate = DataGenerator.generateDate(5);
 
         $("[data-test-id='city'] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(meetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
-        $("[data-test-id='phone'] input").setValue("89219999999");
+        $("[data-test-id='phone'] input").setValue(invalidUser.getPhone());
         $(".checkbox").click();
         $(".button").click();
         $(withText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.")).shouldBe(Condition.visible);
@@ -113,13 +140,15 @@ public class AppCardDeliveryTest {
 
     @Test
     void shouldAlertIfNoAgreement() {
-        val validUser = DataGenerator.Registration.generateUser("ru");
+        val validUser = DataGenerator.Registration.generateValidUser("ru");
+        val meetingDate = DataGenerator.generateDate(5);
 
         $("[data-test-id='city'] input").setValue(validUser.getCity());
+        $("[data-test-id='date'] input").sendKeys(Keys.CONTROL +"A",Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(meetingDate);
         $("[data-test-id='name'] input").setValue(validUser.getName());
         $("[data-test-id='phone'] input").setValue(validUser.getPhone());
         $(".button").click();
-        $("label.input_invalid[data-test-id='agreement']");
+        $("label.input_invalid[data-test-id='agreement']").shouldBe(Condition.visible);;
     }
-
 }
